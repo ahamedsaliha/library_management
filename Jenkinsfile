@@ -16,7 +16,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo '📦 Cloning repository...'
-                git 'https://github.com/ahamedsaliha/library_management.git'
+                git branch: 'main', url: 'https://github.com/ahamedsaliha/library_management.git'
             }
         }
 
