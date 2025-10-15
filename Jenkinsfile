@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK17'        
+        jdk 'JDK19'        
         maven 'Maven3'     
     }
 
@@ -17,35 +17,35 @@ pipeline {
         stage('Build') {
             steps {
                 echo '🔨 Building project...'
-                sh 'mvn -B clean package'
+                bat 'mvn -B clean package'
             }
         }
 
         stage('Test') {
             steps {
                 echo '🧪 Running tests...'
-                sh 'mvn -B test'
+                bat 'mvn -B test'
             }
         }
 
         stage('Package Jar') {
             steps {
                 echo '🎁 Creating JAR file...'
-                sh 'ls target'
+                bat 'ls target'
             }
         }
 
         stage('Docker Build') {
             steps {
                 echo '🐳 Building Docker image...'
-                sh 'docker build -t library-management:${BUILD_NUMBER} .'
+                bat 'docker build -t library-management:${BUILD_NUMBER} .'
             }
         }
 
         stage('Run Container') {
             steps {
                 echo '🚀 Running container...'
-                sh '''
+                bat '''
                     docker stop library || true
                     docker rm library || true
                     docker run -d --name library -p 8080:8080 library-management:${BUILD_NUMBER}
