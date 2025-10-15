@@ -37,21 +37,22 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                echo '🐳 Building Docker image...'
-                bat 'docker build -t library-management:${BUILD_NUMBER} .'
-            }
-        }
+             echo '🐳 Building Docker image...'
+             bat "docker build -t library-management:%BUILD_NUMBER% ."
+         }
+      }
 
         stage('Run Container') {
-            steps {
-                echo '🚀 Running container...'
-                bat '''
-                    docker stop library || true
-                    docker rm library || true
-                    docker run -d --name library -p 8080:8080 library-management:${BUILD_NUMBER}
-                '''
-            }
-        }
+          steps {
+           echo '🚀 Running container...'
+           bat '''
+           docker stop library || exit 0
+           docker rm library || exit 0
+          docker run -d --name library -p 8080:8080 library-management:%BUILD_NUMBER%
+          '''
+      }
+}
+        
     }
 
     post {
