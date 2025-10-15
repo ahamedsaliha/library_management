@@ -2,15 +2,21 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK19'        
-        maven 'Maven3'     
+        jdk 'JDK19'        // Make sure JDK19 is configured in Jenkins Global Tool Configuration
+        maven 'Maven3'     // Make sure Maven3 is configured in Jenkins
+    }
+
+    environment {
+        APP_NAME = 'library-management'
+        DEPLOY_DIR = 'C:\\Users\\Ahamed Saliha\\.jenkins\\deployments'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo '📦 Cloning repository...'
-                checkout scm
+                git 'https://github.com/ahamedsaliha/library_management.git'
             }
         }
 
@@ -28,39 +34,34 @@ pipeline {
             }
         }
 
-        stage('Package Jar') {
+        stage('Package') {
             steps {
-                echo '🎁 Creating JAR file...'
+                echo '🎁 Preparing artifact...'
                 bat 'dir target'
             }
         }
 
-        stage('Docker Build') {
-            steps {
-             echo '🐳 Building Docker image...'
-             bat "docker build -t library-management:%BUILD_NUMBER% ."
-         }
-      }
+        
 
-        stage('Run Container') {
-          steps {
-           echo '🚀 Running container...'
-           bat '''
-           docker stop library || exit 0
-           docker rm library || exit 0
-          docker run -d --name library -p 8080:8080 library-management:%BUILD_NUMBER%
-          '''
-      }
-}
+        stage('Deploy') {
+            steps {
+                echo '🚀 Deploying application...'
+                bat """
+                if not exist "%DEPLOY_DIR%" mkdir "%DEPLOY_DIR%"
+                copy target\\*.jar "%DEPLOY_DIR%"
+                """
+            }
+        }
+
         
     }
 
     post {
         success {
-            echo '✅ Build successful and container running!'
+            echo '✅ Build and deployment successful!'
         }
         failure {
-            echo '❌ Build failed!'
+            echo '❌ Build failed. Check console output for errors.'
         }
     }
 }
