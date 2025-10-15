@@ -31,7 +31,7 @@ pipeline {
         stage('Package Jar') {
             steps {
                 echo '🎁 Creating JAR file...'
-                bat 'ls target'
+                bat 'dir target'
             }
         }
 
